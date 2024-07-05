@@ -4,8 +4,6 @@ permissions:
   id-token: write
   contents: read
 
-
-
 on:
   workflow_dispatch:
     inputs:
@@ -41,7 +39,9 @@ jobs:
   run-test:
     runs-on: ubuntu-latest
     steps:
-      run: echo "Starting test deployment"
+      - name: Start Test Deployment
+        run: echo "Starting test deployment"
+
   checkout-workload-repo:
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
