@@ -1,0 +1,96 @@
+name: Deploy application
+
+permissions:
+  id-token: write
+  contents: read
+
+
+
+on:
+  workflow_dispatch:
+    inputs:
+      checkout_repository:
+        description: The repository config for the Checkout action
+        type: string
+        default: ${{ github.repository }}
+      checkout_ref:
+          description: The ref config for the Checkout action
+          type: string
+      environment:
+        description: Environment for images to be pushed.
+        required: true
+        type: string
+        default: production
+      argocd_workload_repository:
+        description: Argocd workload repository name in form - org-name/repo-name.
+        required: true
+        type: string
+        default: githb-experiments/test-workload
+  push:
+    branches:
+       - main
+       - develop
+       - test
+  workflow_call:
+    inputs:
+      checkout_repository:
+        description: The repository config for the Checkout action
+        type: string
+        default: ${{ github.repository }}
+      checkout_ref:
+          description: The ref config for the Checkout action
+          type: string
+      environment:
+        description: Environment for images to be pushed.
+        required: true
+        type: string
+        default: production
+      argocd_workload_repository:
+        description: Argocd workload repository name in form - org-name/repo-name.
+        required: true
+        type: string
+        default: githb-experiments/test-workload
+    outputs:
+      tag:
+        description: "Ephemeral environment tag"
+        value: ${{ jobs.create-tag.outputs.eph_tag }}
+      base_tag:
+        description: "Release tag used for eph tag creation"
+        value: ${{ jobs.create-tag.outputs.base_tag }}
+
+jobs:
+  create-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      eph_tag: ${{ steps.tag.outputs.eph_tag }}
+      base_tag: ${{ steps.latest_tag.outputs.tag }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          repository: ${{ inputs.checkout_repository }}
+          ref: ${{ inputs.checkout_ref }}
+      - name: Commit SHA
+        id: commit_sha
+        run: |
+          echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: Get latest tag
+        id: latest_tag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+        with:
+          fallback: 1.0.0
+      - name: Create final tag
+        id: tag
+        run: |
+          echo "eph_tag=${{ steps.latest_tag.outputs.tag }}-${{ steps.commit_sha.outputs.sha_short }}" >> $GITHUB_OUTPUT
+
+  checkout-workload-repo:
+    environment: ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout ArgoCD repository
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ inputs.argocd_workload_repository }}
+        ssh-key: ${{ secrets.deploy_key }}
