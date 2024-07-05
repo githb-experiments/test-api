@@ -47,11 +47,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Show Folders initial
-      run: ls
+      run: ls -al
     - name: Checkout ArgoCD repository
       uses: actions/checkout@v4
       with:
         repository: ${{ inputs.argocd_workload_repository }}
         ssh-key: ${{ secrets.deploy_key }}
     - name: Show Folders final
-      run: ls
+      run: ls -al
