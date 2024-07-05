@@ -46,12 +46,16 @@ jobs:
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     steps:
+    - name: Echo input repo
+      run: |
+        echo Starting test checkout
+        echo ${{ inputs.argocd_workload_repository }}
     - name: Show Folders initial
       run: ls -al
     - name: Checkout ArgoCD repository
       uses: actions/checkout@v4
       with:
-        repository: ${{ inputs.argocd_workload_repository }}
+        repository: githb-experiments/test-workload
         ssh-key: ${{ secrets.deploy_key }}
     - name: Show Folders final
       run: ls -al
