@@ -6,34 +6,34 @@ permissions:
 
 on:
   workflow_dispatch:
-    inputs:
-      environment:
-        description: Environment for images to be pushed.
-        required: true
-        type: string
-        default: production-test
-      argocd_workload_repository:
-        description: Argocd workload repository name in form - org-name/repo-name.
-        required: true
-        type: string
-        default: githb-experiments/test-workload
+#    inputs:
+#      environment:
+#        description: Environment for images to be pushed.
+#        required: true
+#        type: string
+#        default: production-test
+#      argocd_workload_repository:
+#        description: Argocd workload repository name in form - org-name/repo-name.
+#        required: true
+#        type: string
+#        default: githb-experiments/test-workload
   push:
     branches:
        - main
        - develop
        - test
-  workflow_call:
-    inputs:
-      environment:
-        description: Environment for images to be pushed.
-        required: true
-        type: string
-        default: production-test
-      argocd_workload_repository:
-        description: Argocd workload repository name in form - org-name/repo-name.
-        required: true
-        type: string
-        default: githb-experiments/test-workload
+#  workflow_call:
+#    inputs:
+#      environment:
+#        description: Environment for images to be pushed.
+#        required: true
+#        type: string
+#        default: production-test
+#      argocd_workload_repository:
+#        description: Argocd workload repository name in form - org-name/repo-name.
+#        required: true
+#        type: string
+#        default: githb-experiments/test-workload
 
 jobs:
   run-test:
